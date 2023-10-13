@@ -67,7 +67,7 @@ public final class Demo extends JavaPlugin {
 		GroupCommand();
 	}
 
-	Bot bot = BotFactory.INSTANCE.newBot(2750250833L, "9108zoufengjun");
+	Bot bot = BotFactory.INSTANCE.newBot(2750250833L, "");
 	public String role = output("role", "command.txt", 0);//元神接口角色
 	public String spark = output("spark", "command.txt", 0);//星火语音文字
 
@@ -1200,8 +1200,8 @@ public final class Demo extends JavaPlugin {
 	public static String Spark(String question) throws Exception {
 		final List<String> answerList = new ArrayList<>();
 		String hostUrl = "https://spark-api.xf-yun.com/v2.1/chat";
-		String apiKey = "73bebf04b6ed595553634053960514fe";
-		String apiSecret = "ZWViZDI5Yzk2N2FiYWFlMGU2NDhlNmEz";
+		String apiKey = "";
+		String apiSecret = "";
 		String authUrl = getAuthUrl(hostUrl, apiKey, apiSecret);
 		String appid = "cc36e4de";
 		OkHttpClient client = new OkHttpClient.Builder().build();
