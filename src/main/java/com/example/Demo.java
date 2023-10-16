@@ -8,6 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -23,7 +24,6 @@ import javax.net.ssl.HttpsURLConnection;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.*;
 import net.mamoe.mirai.Bot;
@@ -38,12 +38,7 @@ import net.mamoe.mirai.event.GlobalEventChannel;
 import net.mamoe.mirai.message.data.*;
 import net.mamoe.mirai.utils.ExternalResource;
 import org.apache.commons.io.FileUtils;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -116,17 +111,19 @@ public final class Demo extends JavaPlugin {
 			switch (content) {
 				case "菜单":
 					try {
-						byte[] menu = wordTopicture(
-								"『皮卡丘口令大全』\n" +
-										"= = = = = = = = = = = =\n" +
-										"括号为指令输入提示！\n" +
-										"[签到] [估价] [重开]\n" +
-										"[核废水] [查(QQ)] [短视频]\n" +
-										"[反查(手机号)]\n" +
-										"[星火(问题)]\n" +
-										"= = = = = = = = = = = =", "blue");
-						Image image = event.getSubject().uploadImage(ExternalResource.create(menu));
-						event.getSubject().sendMessage(image);
+						String num = random(1, 5, 0);
+						Image image = event.getSubject().uploadImage(ExternalResource.create(encodeImage("C:\\Users\\z\\Desktop\\BOT素材\\img\\菜单" + num + ".png")));
+
+						MessageChainBuilder builder = new MessageChainBuilder();
+						builder.append("『皮卡丘口令大全』\n");
+						builder.append("= = = = = = = =\n");
+						builder.append("签到・估价・统计・背包\n");
+						builder.append("重开・退出・市场・打工\n");
+						builder.append("星火・问答・炸弹・选择\n");
+						builder.append("地雷・估价・统计・查号\n");
+						builder.append("= = = = = = = =\n");
+						builder.append(image);
+						event.getSubject().sendMessage(builder.build());
 						countAdd();
 					} catch (IOException e) {
 						throw new RuntimeException(e);
@@ -140,17 +137,39 @@ public final class Demo extends JavaPlugin {
 					break;
 				case "签到":
 					try {
-						if (userinfo(String.valueOf(userqq)).equals("null")) {
-							event.getSubject().sendMessage("今天签过到了喵ᓚᘏᗢ");
+						String reply = userinfo(String.valueOf(userqq));
+						String[] user = reply.split(":");
+						if (user[0].equals("null")) {
+							String num = random(1, 2, 0);
+							Image image = event.getSubject().uploadImage(ExternalResource.create(encodeImage("C:\\Users\\z\\Desktop\\BOT素材\\img\\已签到" + num + ".png")));
+							MessageChainBuilder builder = new MessageChainBuilder();
+							builder.append("今天签过到了喵ᓚᘏᗢ\n");
+							builder.append(image);
+							event.getSubject().sendMessage(builder.build());
 							countAdd();
 						} else {
-							ExternalResource audioResource = ExternalResource.create(new File(yuansheng("说一句可爱俏皮有趣的话")));
-							Audio audio = event.getSubject().uploadAudio(audioResource);
-							event.getSubject().sendMessage(username + "收到了来自[" + role + "]的问候");
-							event.getSubject().sendMessage(audio);
-							audioResource.close();
-							new File(yuansheng(role)).delete();
+							String[] bag = bag(String.valueOf(userqq)).split(":");
+							if (!bag[0].equals("null")) {
+								String num = random(1, 4, 0);
+								Image image = event.getSubject().uploadImage(ExternalResource.create(encodeImage("C:\\Users\\z\\Desktop\\BOT素材\\img\\签到" + num + ".png")));
+								MessageChainBuilder builder = new MessageChainBuilder();
+								builder.add("『皮卡丘专属助手』\n");
+								builder.add("⊱ ———*———⊰\n");
+								builder.add("🚩[昵称]:" + username + "\n");
+								builder.add("🚩[账号]:" + userqq + "\n");
+								builder.add("🚩[地雷奖励]: " + user[0] + " 枚\n");
+								builder.add("🚩[炸弹奖励]: " + user[1] + " 枚\n");
+								builder.add("🚩[星币奖励]: " + user[2] + " 枚\n");
+								builder.add("⊱ ———*———⊰\n");
+								builder.add("🚩[指令]:背包\n");
+								builder.add("🚩[指令]:埋地雷\n");
+								builder.add("🚩[指令]:丢@\n");
+								builder.add("⊱ ———*———⊰\n");
+								builder.add(image);
+								event.getSubject().sendMessage(builder.build());
+							}
 							countAdd();
+							break;
 						}
 					} catch (Exception e) {
 						throw new RuntimeException(e);
@@ -171,19 +190,17 @@ public final class Demo extends JavaPlugin {
 					}
 					break;
 				case "短视频":
-					byte[] video = new byte[0];
+					event.getSubject().sendMessage(
+							"『皮卡丘专属助手』\n" +
+									"= = = = = = = = = = = =\n" +
+									"[甜妹视频]⚓[吊带系列]\n" +
+									"[你的欲梦]⚓[JK系列]\n" +
+									"[作者推荐]⚓[cos系列]\n" +
+									"[玉足视频]⚓[清纯系列]\n" +
+									"[热舞视频]⚓[慢摇系列]\n" +
+									"[小哥哥视频]⚓[小姐姐视频]\n" +
+									"\n= = = = = = = = = = = =");
 					try {
-						video = wordTopicture("『皮卡丘口令大全』\n" +
-								"= = = = = = = = = = = =\n" +
-								"[小哥哥视频] [小姐姐视频]\n" +
-								"[甜妹视频] [吊带系列]\n" +
-								"[你的欲梦] [JK系列]\n" +
-								"[作者推荐] [cos系列]\n" +
-								"[玉足视频] [清纯系列]\n" +
-								"[热舞视频] [慢摇系列]\n" +
-								"\n= = = = = = = = = = = =", "blue");
-						Image image = event.getSubject().uploadImage(ExternalResource.create(video));
-						event.getSubject().sendMessage(image);
 						countAdd();
 					} catch (IOException e) {
 						throw new RuntimeException(e);
@@ -385,22 +402,29 @@ public final class Demo extends JavaPlugin {
 					break;
 				case "埋地雷":
 					try {
-						int user_mine = Integer.parseInt(output(String.valueOf(userqq), "user-mine.txt", 1));
-						if (user_mine == 0) {
-							event.getSubject().sendMessage("[" + username + "]你没有地雷了\n[签到]每日可获取\n[背包]可查看数量\n[市场]可购买");
+						String user_mine = output(String.valueOf(userqq), "user-mine.txt", 1);
+						if (user_mine.equals("close") | user_mine.equals("0")) {
+							event.getSubject().sendMessage("🍥[" + username + "]你没有地雷了\n🍥[签到]每日可获取\n🍥[背包]可查看数量\n🍥[市场]可购买");
 							break;
 						}
 						if (mine.trim().equals("close")) {
+							String num = random(1, 5, 0);
+							Image image = event.getSubject().uploadImage(ExternalResource.create(encodeImage("C:\\Users\\z\\Desktop\\BOT素材\\img\\地雷" + num + ".png")));
+							MessageChainBuilder builder = new MessageChainBuilder();
+
+							builder.append("[" + username + "]已埋好地雷啦，将随机引爆😋\n");
+							builder.append(image);
+							event.getSubject().sendMessage(builder.build());
+
 							input(String.valueOf(groupId), "open", "mine.txt");
-							event.getSubject().sendMessage("[" + username + "]已埋好地雷啦，将随机引爆😋");
-							input(String.valueOf(userqq), String.valueOf(user_mine - 1), "user-mine.txt");
+							input(String.valueOf(userqq), String.valueOf(Integer.parseInt(user_mine) - 1), "user-mine.txt");
 							countAdd();
 						}
 						if (mine.trim().equals("open")) {
 							event.getSubject().sendMessage("本群已有一颗地雷了啦🤔");
 							countAdd();
 						}
-					} catch (IOException e) {
+					} catch (Exception e) {
 						event.getSubject().sendMessage("[" + username + "]你没有地雷了\n[签到]每日可获取\n[背包]可查看数量\n[市场]可购买");
 					}
 					break;
@@ -414,15 +438,25 @@ public final class Demo extends JavaPlugin {
 				case "背包":
 					String[] bag = bag(String.valueOf(userqq)).split(":");
 					if (!bag[0].equals("null")) {
-						event.getSubject().sendMessage(
-								"『皮卡丘专属助手』\n" +
-										"= = = = = = = = = = = =\n" +
-										"🥇[用户]:" + userqq + "\n" +
-										"🥇[地雷]:" + bag[0] + "\n" +
-										"🥇[炸弹]:" + bag[1] + "\n" +
-										"🥇[盾牌]:" + bag[3] + "\n" +
-										"🥇[星币]:" + bag[2] + "\n" +
-										"= = = = = = = = = = = =");
+						String num = null;
+						try {
+							num = random(1, 5, 0);
+							Image image = event.getSubject().uploadImage(ExternalResource.create(encodeImage("C:\\Users\\z\\Desktop\\BOT素材\\img\\地雷" + num + ".png")));
+							MessageChainBuilder messageBuilder = new MessageChainBuilder()
+									.append("『皮卡丘专属助手』\n")
+									.append("= = = = = = = =\n")
+									.append("🥇[用户]:" + userqq + "\n")
+									.append("🥇[地雷]:" + bag[0] + "\n")
+									.append("🥇[炸弹]:" + bag[1] + "\n")
+									.append("🥇[盾牌]:" + bag[3] + "\n")
+									.append("🥇[星币]:" + bag[2] + "\n")
+									.append("= = = = = = = =\n")
+									.append(image);
+							event.getSubject().sendMessage(messageBuilder.build());
+						} catch (IOException e) {
+							throw new RuntimeException(e);
+						}
+
 					} else {
 						event.getSubject().sendMessage("还没有背包讷~初次[签到]可获取");
 					}
@@ -505,9 +539,9 @@ public final class Demo extends JavaPlugin {
 					event.getSubject().sendMessage(
 							"『皮卡丘市场』\n" +
 									"= = = = = = = = = = = =\n" +
-									"🍟[地雷]:" + 5 + "\n" +
-									"🍟[炸弹]:" + 7 + "\n" +
-									"🍟[盾牌]:" + 7 + "\n" +
+									"🍟[地雷]:" + 5 + "星币\n" +
+									"🍟[炸弹]:" + 7 + "星币\n" +
+									"🍟[盾牌]:" + 7 + "星币\n" +
 									"🍟(买)(空格)(目标)(数量)\n" +
 									"= = = = = = = = = = = =");
 					break;
@@ -772,19 +806,20 @@ public final class Demo extends JavaPlugin {
 							Pattern regex = Pattern.compile(pattern);
 							Matcher matcher = regex.matcher(content);
 							String boom = output(String.valueOf(userqq), "user-boom.txt", 1);
-							input(String.valueOf(userqq), String.valueOf(Integer.parseInt(boom) - 1), "user-boom.txt");
 							String shield = "0";
 							String qq = "";
-							String random = random(0, 9, 0);
+
 							if (matcher.find()) {
 								qq = matcher.group();
 								shield = output(String.valueOf(qq), "user-shield.txt", 1);
 							} else {
-								event.getSubject().sendMessage("买的什么呢~卡丘看不懂");
+								event.getSubject().sendMessage("丢的什么呢~卡丘看不懂");
 							}
-							if (boom.equals("0")) {
-								event.getSubject().sendMessage("[" + username + "]你没有炸弹了\n[签到]每日可获取\n[背包]可查看数量\n[市场]可购买");
+							if (boom.equals("0") | boom.equals("close")) {
+								event.getSubject().sendMessage("🎪[" + username + "]你没有炸弹了\n🎪[签到]每日可获取\n🎪[背包]可查看数量\n🎪[市场]可购买");
 							} else {
+								String random = random(0, 9, 0);
+								input(String.valueOf(userqq), String.valueOf(Integer.parseInt(boom) - 1), "user-boom.txt");
 								Group group = event.getGroup();
 								Member member = group.get(Long.parseLong(qq));
 								String nick = member.getNick();
@@ -824,6 +859,7 @@ public final class Demo extends JavaPlugin {
 													event.getSubject().sendMessage("[" + nick + "]不屑一顾的瞥了一眼[" + username + "]的小鸟\n用[护盾]轻轻一挥手就将💣击落");
 													break;
 												case "2":
+												case "6":
 													event.getSubject().sendMessage("[" + nick + "]冷眼旁观，看着[" + username + "]挣扎着躲避挡住他💣的[护盾]\n因为不屑而毫无追击之意");
 													break;
 												case "7":
@@ -841,11 +877,10 @@ public final class Demo extends JavaPlugin {
 											case "4":
 												event.getSubject().sendMessage("[" + username + "]贻笑大方,老眼昏花\n站在[" + nick + "]面前都没有丢中[炸弹]");
 												break;
-											case "5":
 											case "8":
 												event.getSubject().sendMessage("[" + username + "]自诩为[神炮手],看来不过如此\n连最简单的目标都无法命中,真是让人捧腹大笑");
 												break;
-											case "6":
+											case "5":
 												event.getSubject().sendMessage("[" + nick + "]不屑一顾,看着[" + username + "]手忙脚乱地[打炮],轻轻松松就躲了过去");
 												break;
 										}
@@ -861,8 +896,8 @@ public final class Demo extends JavaPlugin {
 										break;
 								}
 							}
-						} catch (IOException e) {
-							event.getSubject().sendMessage("[" + username + "]你没有炸弹了\n[签到]每日可获取\n[背包]可查看数量\n[市场]可购买");
+						} catch (Exception e) {
+							event.getSubject().sendMessage("☘️[" + username + "]你没有炸弹了\n☘️[签到]每日可获取\n☘️[背包]可查看数量\n☘️[市场]可购买");
 						}
 					}
 					//购买
@@ -909,14 +944,33 @@ public final class Demo extends JavaPlugin {
 						}
 					}
 					if (content.startsWith("打工")) {
-						int add = Integer.parseInt(content.split(" ")[1]);
-						int money = Integer.parseInt(output(String.valueOf(userqq), "user-money.txt", 1));
-						if (add <= 9 & add > 0) {
-							input(String.valueOf(userqq), String.valueOf(add + money), "user-money.txt");
-							event.getSender().mute(60 * add);
-							event.getSubject().sendMessage("[" + username + "]打工中,本次" + add + "分钟......");
+						if (mine.trim().equals("open")) {
+							event.getSubject().sendMessage("(✿◕‿◕✿)群里面有颗地雷咋打工呀~");
 						} else {
-							event.getSubject().sendMessage("怎么能打工这么久呢,0-9分钟就够了啦");
+							int add = Integer.parseInt(content.split(" ")[1]);
+							String money = output(String.valueOf(userqq), "user-money.txt", 1);
+							if (money.equals("close")) {
+								event.getSubject().sendMessage("你是第一次来打工吧,先[签到]录入信息才能打工啦~");
+							} else {
+								if (add <= 9 && add >= 1) {
+									try {
+										String num = random(1, 6, 0);
+										Image image = event.getSubject().uploadImage(ExternalResource.create(encodeImage("C:\\Users\\z\\Desktop\\BOT素材\\img\\work" + num + ".jpg")));
+										MessageChainBuilder messageBuilder = new MessageChainBuilder()
+												.append("呐呐呐~你的背包到账[")
+												.append(String.valueOf(add))
+												.append("]枚星币啦\n")
+												.append(image);
+										event.getSubject().sendMessage(messageBuilder.build());
+										event.getSender().mute(150 * Integer.parseInt(num));
+										input(String.valueOf(userqq), String.valueOf(add + Integer.parseInt(money)), "user-money.txt");
+									} catch (IOException e) {
+										throw new RuntimeException(e);
+									}
+								} else {
+									event.getSubject().sendMessage("怎么能打工这么久呢,1-9分钟就够了啦");
+								}
+							}
 						}
 					}
 			}
@@ -990,17 +1044,18 @@ public final class Demo extends JavaPlugin {
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 			String time = now.format(formatter);
 			try {
-				byte[] card_change = wordTopicture("『皮卡丘专属助手』\n" +
-						"= = = = = = = = = = = =\n" +
-						"检测到群里有一货改名啦\n" +
-						"╔[成员号]:" + userId + "\n" +
-						"╟[旧名片]:" + oldname + "\n" +
-						"╟[新名片]:" + newname + "\n" +
-						"╚" + time +
-						"\n= = = = = = = = = = = =", "blue");
-				Image tailimage = memberCardChangeEvent.getMember().uploadImage(ExternalResource.create(card_change));
-				memberCardChangeEvent.getGroup().sendMessage(tailimage);
-				memberCardChangeEvent.getGroup().sendMessage("[" + newname + "]");
+				if (!(newname.isEmpty()) & !(oldname.isEmpty())) {
+					byte[] card_change = wordTopicture("『皮卡丘专属助手』\n" +
+							"= = = = = = = = = = = =\n" +
+							"检测到群里有一货改名啦\n" +
+							"╔[成员号]:" + userId + "\n" +
+							"╟[旧名片]:" + oldname + "\n" +
+							"╟[新名片]:" + newname + "\n" +
+							"╚" + time +
+							"\n= = = = = = = = = = = =", "blue");
+					Image tailimage = memberCardChangeEvent.getMember().uploadImage(ExternalResource.create(card_change));
+					memberCardChangeEvent.getGroup().sendMessage(tailimage);
+				}
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
@@ -1337,30 +1392,36 @@ public final class Demo extends JavaPlugin {
 		String moneyStr = output(userqq, "user-money.txt", 1).trim();
 		String lastTime = output(userqq, "user-time.txt", 1).trim();
 
-		if (mineStr.equals("0") || boomStr.equals("0") || moneyStr.equals("0") || lastTime.equals("0")) {
-			input(userqq, random(0, 3, 0), "user-mine.txt");
-			input(userqq, random(0, 3, 0), "user-boom.txt");
-			input(userqq, random(10, 20, 0), "user-money.txt");
+		if (mineStr.equals("close") || boomStr.equals("close") || moneyStr.equals("close") || lastTime.equals("close")) {
+			String addMine = random(1, 4, 0);
+			String addBoom = random(1, 3, 0);
+			String addMoney = random(10, 20, 0);
+			input(userqq, addMine, "user-mine.txt");
+			input(userqq, addBoom, "user-boom.txt");
+			input(userqq, addMoney, "user-money.txt");
 			input(userqq, getCurrentDate(), "user-time.txt");
-			return "1";
+			return addMine + ":" + addBoom + ":" + addMoney;
 		}
-		int mine = Integer.parseInt(mineStr);
-		int boom = Integer.parseInt(boomStr);
-		int money = Integer.parseInt(moneyStr);
-		int newMine = mine + Integer.parseInt(random(1, 4, 0));
-		int newBoom = boom + Integer.parseInt(random(1, 3, 0));
-		int newMoney = money + Integer.parseInt(random(10, 20, 0));
+
 
 		if (lastTime.equals(getCurrentDate())) {
-			return "1";
+			return "null";
 		} else {
+			int mine = Integer.parseInt(mineStr);
+			int boom = Integer.parseInt(boomStr);
+			int money = Integer.parseInt(moneyStr);
+			String addMine = random(1, 4, 0);
+			String addBoom = random(1, 3, 0);
+			String addMoney = random(10, 20, 0);
+			int newMine = mine + Integer.parseInt(addMine);
+			int newBoom = boom + Integer.parseInt(addBoom);
+			int newMoney = money + Integer.parseInt(addMoney);
 			input(userqq, String.valueOf(newMine), "user-mine.txt");
 			input(userqq, String.valueOf(newBoom), "user-boom.txt");
 			input(userqq, String.valueOf(newMoney), "user-money.txt");
 			input(userqq, getCurrentDate(), "user-time.txt");
+			return addMine + ":" + addBoom + ":" + addMoney;
 		}
-
-		return "1";
 	}
 
 	//背包
@@ -1370,7 +1431,7 @@ public final class Demo extends JavaPlugin {
 		String moneyStr = output(userqq, "user-money.txt", 1);
 		String lastTime = output(userqq, "user-time.txt", 1);
 		String shieldStr = output(userqq, "user-shield.txt", 1);
-		if (mineStr.equals("close") || boomStr.equals("close") || moneyStr.equals("close") || lastTime.equals("close")) {
+		if (mineStr.equals("close") || mineStr.isEmpty() || boomStr.equals("close") || boomStr.isEmpty() || moneyStr.equals("close") || lastTime.equals("close")) {
 			return "null";
 		}
 		int mine = Integer.parseInt(mineStr);
@@ -1412,7 +1473,7 @@ public final class Demo extends JavaPlugin {
 
 	//将文字处理成微软雅黑的颜色字体
 	public byte[] wordTopicture(String content, String color) throws IOException {//
-		String urlString = "http://api.tangdouz.com/wz/tuw2.php?nr=" + URLEncoder.encode(content, "UTF-8") + "&ys=" + URLEncoder.encode(color, "UTF-8");
+		String urlString = "http://api.setbug.com/tools/text2image/?text=" + URLEncoder.encode(content, "UTF-8") /*+ "&ys=" + URLEncoder.encode(color, "UTF-8")*/;
 		return urlTopng(urlString);
 	}
 
@@ -1450,7 +1511,7 @@ public final class Demo extends JavaPlugin {
 
 	//api获取随机数
 	public String random(int min, int max, int flag) throws IOException {
-		String urlstring = "http://api.tangdouz.com/sjs1.php?min=" + min + "&max=" + max;
+		/*String urlstring = "http://api.tangdouz.com/sjs1.php?min=" + min + "&max=" + max;
 		URL url = new URL(urlstring);
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		conn.setRequestMethod("GET");
@@ -1469,7 +1530,12 @@ public final class Demo extends JavaPlugin {
 		}
 
 		in.close();
-		return response.toString();
+		return response.toString();*/
+		SecureRandom secureRandom = new SecureRandom();
+		int randomNumber;
+		randomNumber = secureRandom.nextInt(max - min + 1) + min;
+
+		return String.valueOf(randomNumber);
 	}
 
 	//读取
@@ -1486,17 +1552,15 @@ public final class Demo extends JavaPlugin {
 			//如果没有找到匹配的head，则写入新的行
 			FileWriter fileWriter = new FileWriter("C:\\Users\\z\\Desktop\\BOT素材\\" + path, true);
 			BufferedWriter writer = new BufferedWriter(fileWriter);
-			if (i == 0) {
+			if (i == 0 | i == 1) {
 				writer.write(head + ":close");
-			} else {
-				writer.write(head + ":0");
 			}
 			writer.newLine();
 			writer.close();
 		} catch (IOException e) {
 			System.out.println("注册中......");
 		}
-		return null;
+		return "close";
 	}
 
 	//写入
@@ -1507,7 +1571,7 @@ public final class Demo extends JavaPlugin {
 			while ((line = reader.readLine()) != null) {
 				String[] parts = line.split(":");
 				if (parts[0].trim().equals(head)) {
-					line = parts[0].trim() + ": " + value.trim();
+					line = parts[0].trim() + ":" + value.trim();
 				}
 				newContent.append(line).append(System.lineSeparator());
 			}
