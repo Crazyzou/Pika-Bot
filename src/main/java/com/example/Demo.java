@@ -112,6 +112,12 @@ public final class Demo extends JavaPlugin {
 				}
 				if (mine.trim().equals("open") & permission.equals("MEMBER")) {
 					try {
+						/**add by BigCherryBall**/
+						if (userqq == 2655602003)
+						{
+							return
+						}
+						/**add end**/
 						String i = random(1, 5, 0);
 						if (Integer.parseInt(i) >= 3) {
 							mine = "close";
@@ -871,6 +877,28 @@ public final class Demo extends JavaPlugin {
 									Group group = event.getGroup();
 									Member member = group.get(Long.parseLong(qq));
 									String nick = member.getNick();
+									/**add by BigCherryBall**/
+									if (member == 2655602003)
+									{
+										if(random == "0")
+										{
+											random = "0";
+										}
+										else if (random == "1")
+										{
+											random = "4";
+										}
+										else if(random == "2")
+										{
+											random = "5";
+										}
+										else
+										{
+											random = "9";
+										}
+
+									}
+									/**add end**/
 									switch (random) {
 										//丢中
 										case "0":
