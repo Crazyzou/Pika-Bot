@@ -115,7 +115,7 @@ public final class Demo extends JavaPlugin {
 						/**add by BigCherryBall**/
 						if (userqq == 2655602003)
 						{
-							return
+							return;
 						}
 						/**add end**/
 						String i = random(1, 5, 0);
