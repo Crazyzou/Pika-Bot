@@ -60,7 +60,6 @@ public final class Demo extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		getLogger().info("Plugin loaded!");
-
 		GroupChange();
 		GroupCommand();
 	}
@@ -76,6 +75,8 @@ public final class Demo extends JavaPlugin {
 
 	// 群聊关键词总类
 	public void GroupCommand() {
+
+		long lordID = 2655602003L;
 
 		// 监听消息+注册命令
 		GlobalEventChannel.INSTANCE.subscribeAlways(GroupMessageEvent.class, event -> {
@@ -113,7 +114,7 @@ public final class Demo extends JavaPlugin {
 				if (mine.trim().equals("open") & permission.equals("MEMBER")) {
 					try {
 						/**add by BigCherryBall**/
-						if (userqq == 2655602003)
+						if (userqq == lordID)
 						{
 							return;
 						}
@@ -878,7 +879,7 @@ public final class Demo extends JavaPlugin {
 									Member member = group.get(Long.parseLong(qq));
 									String nick = member.getNick();
 									/**add by BigCherryBall**/
-									if (member == 2655602003)
+									if (member.getId() == lordID)
 									{
 										if(random == "0")
 										{
@@ -1153,7 +1154,7 @@ public final class Demo extends JavaPlugin {
 		});
 	}
 
-	//群聊动态监听
+	//群聊动态监听, 进群、退群
 	public void GroupChange() {
 		//群员离群加群检测
 		GlobalEventChannel.INSTANCE.subscribeAlways(GroupMemberEvent.class, groupMemberEvent -> {
@@ -1757,6 +1758,10 @@ public final class Demo extends JavaPlugin {
 		}
 	}
 
+	// 操作关键词回复阻止
+	ArrayList<String> stopReply = new ArrayList<>(Arrays.asList(
+			"埋炸弹", "签到", "统计"));
+
 	//词库回复
 	public String aojiaoreply(String talk) throws IOException {
 		String filePath = "C:\\Users\\z\\Desktop\\BOT素材\\可爱词库.xlsx";
@@ -1766,6 +1771,10 @@ public final class Demo extends JavaPlugin {
 		     Workbook workbook = new XSSFWorkbook(fis)) {
 			Sheet sheet = workbook.getSheetAt(0);
 			List<Row> matchingRows = new ArrayList<>();
+
+			if(stopReply.contains(talk)){
+				return reply;
+			}
 
 			for (Row row : sheet) {
 				Cell cell = row.getCell(0, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
@@ -1810,6 +1819,9 @@ public final class Demo extends JavaPlugin {
 
 	//学习
 	public void study(String qq, String question, String answer) {
+		if(stopReply.contains(question)){
+			return;
+		}
 		try {
 			String filePath = "C:\\Users\\z\\Desktop\\BOT素材\\可爱词库.xlsx";
 			String filePath2 = "C:\\Users\\z\\Desktop\\BOT素材\\check.txt";
