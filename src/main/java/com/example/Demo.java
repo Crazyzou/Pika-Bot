@@ -71,7 +71,8 @@ public final class Demo extends JavaPlugin {
 	static final int CONNECTION_TIMEOUT = 5000;
 	static final int READ_TIMEOUT = 10000;
 	static final int BUFFER_SIZE = 1024;
-
+	ArrayList<String> stopReply = new ArrayList<>(Arrays.asList(
+			"埋炸弹", "签到", "统计"));
 	private static final ExecutorService executor = Executors.newFixedThreadPool(2);
 
 	// 群聊关键词总类
@@ -112,11 +113,12 @@ public final class Demo extends JavaPlugin {
 				}
 				if (mine.trim().equals("open") & permission.equals("MEMBER")) {
 					try {
-						String i = random(1, 5, 0);
-						if (Integer.parseInt(i) >= 3) {
+						String i = random(1, 10, 0);
+						int j = Integer.parseInt(i);
+						if (Integer.parseInt(i) >= 7) {
 							mine = "close";
-							event.getSender().mute(60 * Integer.parseInt(i));
-							event.getSubject().sendMessage("哈哈哈哈~\n[" + username + "]踩到了地雷，失去发言权[" + i + "]分钟");
+							event.getSender().mute(30 * j);
+							event.getSubject().sendMessage("哈哈哈哈~\n[" + username + "]踩到了地雷，失去发言权[" + j / 2 + "]分钟");
 							input(String.valueOf(groupId), "close", "mine.txt");
 							countAdd();
 						}
@@ -733,15 +735,18 @@ public final class Demo extends JavaPlugin {
 											answer = match;
 										}
 									}
-									event.getSubject().sendMessage(
-											"『皮卡丘学习ing』\n" +
-													"= = = = = = = = = = = =\n" +
-													"[用户设问]:\n" + question + "\n" +
-													"- - - - - - - - - - - - \n" +
-													"[用户设答]:\n" + answer + "\n" +
-													"= = = = = = = = = = = =");
-
-									study(String.valueOf(userqq), question, answer);
+									if (stopReply.contains(question)) {
+										event.getSubject().sendMessage("￣へ￣哼~不学这个！");
+									} else {
+										event.getSubject().sendMessage(
+												"『皮卡丘学习ing』\n" +
+														"= = = = = = = = = = = =\n" +
+														"[用户设问]:\n" + question + "\n" +
+														"- - - - - - - - - - - - \n" +
+														"[用户设答]:\n" + answer + "\n" +
+														"= = = = = = = = = = = =");
+										study(String.valueOf(userqq), question, answer);
+									}
 									countAdd();
 								}
 							} catch (IOException e) {
@@ -871,6 +876,17 @@ public final class Demo extends JavaPlugin {
 									Group group = event.getGroup();
 									Member member = group.get(Long.parseLong(qq));
 									String nick = member.getNick();
+									if (member.getId() == 2655602003L) {
+										if (random == "0") {
+											random = "0";
+										} else if (random == "1") {
+											random = "4";
+										} else if (random == "2") {
+											random = "5";
+										} else {
+											random = "9";
+										}
+									}
 									switch (random) {
 										//丢中
 										case "0":
@@ -2034,7 +2050,6 @@ public final class Demo extends JavaPlugin {
 		}
 	}
 
-
 	public static String song(String songName) throws UnsupportedEncodingException {
 		String apiURL = "https://api.yujn.cn/api/kugou.php?msg=" + URLEncoder.encode(songName.trim(), "UTF-8");
 		try {
@@ -2113,7 +2128,7 @@ public final class Demo extends JavaPlugin {
 			e.printStackTrace();
 		}
 	}
-	
+
 	//星火类
 	static class RoleContent {
 		String role;
