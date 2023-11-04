@@ -30,6 +30,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.*;
 import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.BotFactory;
+import net.mamoe.mirai.console.data.PluginConfig;
 import net.mamoe.mirai.contact.*;
 import net.mamoe.mirai.event.events.*;
 import net.mamoe.mirai.internal.deps.okhttp3.*;
@@ -57,12 +58,16 @@ public final class Demo extends JavaPlugin {
 				.build());
 	}
 
+	public File basicDataFolder = getDataFolder();
+	public File basicConfigFolder = getConfigFolder();
+
 	@Override
 	public void onEnable() {
 		getLogger().info("Plugin loaded!");
 		GroupChange();
 		GroupCommand();
 		HeziSubscribe();
+
 	}
 
 
@@ -75,6 +80,8 @@ public final class Demo extends JavaPlugin {
 	ArrayList<String> stopReply = new ArrayList<>(Arrays.asList(
 			"埋炸弹", "签到", "统计"));
 	private static final ExecutorService executor = Executors.newFixedThreadPool(2);
+
+
 
 	// 盒子专用的监听注册
 	public void HeziSubscribe(){
@@ -1704,8 +1711,8 @@ public final class Demo extends JavaPlugin {
 	}
 
 	//读取
-	public static String output(String head, String path, int i) {
-		try (BufferedReader reader = new BufferedReader(new FileReader("C:\\Users\\z\\Desktop\\BOT素材\\" + path))) {
+	public String output(String head, String path, int i) {
+		try (BufferedReader reader = new BufferedReader(new FileReader(new File(basicDataFolder,path)))) {
 			String line;
 			while ((line = reader.readLine()) != null) {
 				String[] parts = line.split(":");
@@ -1715,7 +1722,7 @@ public final class Demo extends JavaPlugin {
 			}
 
 			//如果没有找到匹配的head，则写入新的行
-			FileWriter fileWriter = new FileWriter("C:\\Users\\z\\Desktop\\BOT素材\\" + path, true);
+			FileWriter fileWriter = new FileWriter(new File(basicDataFolder,path), true);
 			BufferedWriter writer = new BufferedWriter(fileWriter);
 			if (i == 0) {
 				writer.write(head + ":close");
@@ -1732,7 +1739,7 @@ public final class Demo extends JavaPlugin {
 
 	//写入
 	public void input(String head, String value, String path) {
-		try (BufferedReader reader = new BufferedReader(new FileReader("C:\\Users\\z\\Desktop\\BOT素材\\" + path))) {
+		try (BufferedReader reader = new BufferedReader(new FileReader(new File(basicDataFolder,path)))) {
 			StringBuilder newContent = new StringBuilder();
 			String line;
 			while ((line = reader.readLine()) != null) {
@@ -1743,7 +1750,7 @@ public final class Demo extends JavaPlugin {
 				newContent.append(line).append(System.lineSeparator());
 			}
 
-			try (BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\Users\\z\\Desktop\\BOT素材\\" + path))) {
+			try (BufferedWriter writer = new BufferedWriter(new FileWriter(new File(basicDataFolder,path)))) {
 				writer.write(newContent.toString());
 			}
 		} catch (IOException e) {
@@ -1753,7 +1760,7 @@ public final class Demo extends JavaPlugin {
 
 	//词库回复
 	public String aojiaoreply(String talk) throws IOException {
-		String filePath = "C:\\Users\\z\\Desktop\\BOT素材\\可爱词库.xlsx";
+		String filePath = new File(basicDataFolder,"可爱词库.xlsx").toString();
 		String reply = "null";
 
 		try (FileInputStream fis = new FileInputStream(filePath);
@@ -1791,7 +1798,7 @@ public final class Demo extends JavaPlugin {
 
 	//调用数据报告
 	public String data() throws IOException {
-		File file = new File("C:\\Users\\z\\Desktop\\BOT素材\\data.txt");
+		File file = new File(basicDataFolder, "data.txt");
 		StringBuilder stringBuilder = new StringBuilder();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
 		String line;
@@ -1805,11 +1812,11 @@ public final class Demo extends JavaPlugin {
 	//学习
 	public void study(String qq, String question, String answer) {
 		try {
-			String filePath = "C:\\Users\\z\\Desktop\\BOT素材\\可爱词库.xlsx";
-			String filePath2 = "C:\\Users\\z\\Desktop\\BOT素材\\check.txt";
+			String filePath = new File(basicDataFolder,"可爱词库.xlsx").toString();
+			String filePath2 = new File(basicDataFolder,"check.txt").toString();
 
 			// 备份原始的 "可爱词库.xlsx"
-			Files.copy(Paths.get(filePath), Paths.get("C:\\Users\\z\\Desktop\\BOT素材\\可爱词库_backup.xlsx"), StandardCopyOption.REPLACE_EXISTING);
+			Files.copy(Paths.get(filePath), Paths.get(basicDataFolder.toString(),"可爱词库_backup.xlsx"), StandardCopyOption.REPLACE_EXISTING);
 
 			File file = new File(filePath);
 			FileInputStream fis = new FileInputStream(file);
@@ -1854,7 +1861,7 @@ public final class Demo extends JavaPlugin {
 
 	//调用计数
 	public void countAdd() throws IOException {
-		File file = new File("C:\\Users\\z\\Desktop\\BOT素材\\data.txt");
+		File file = new File(basicDataFolder,"data.txt");
 		int total = 0;
 		int yesterday = 0;
 		int today = 0;
@@ -1931,7 +1938,7 @@ public final class Demo extends JavaPlugin {
 
 	public String check() {
 		try {
-			String filePath = "C:\\Users\\z\\Desktop\\BOT素材\\check.txt";
+			String filePath = new File(basicDataFolder,"check.txt").toString();
 			StringBuilder content = new StringBuilder();
 			String line;
 			BufferedReader reader = new BufferedReader(new FileReader(filePath));
@@ -1947,7 +1954,7 @@ public final class Demo extends JavaPlugin {
 	}
 
 	public String readAndDeleteLine(String num) {
-		String filepath = "C:\\Users\\z\\Desktop\\BOT素材\\check.txt";
+		String filepath = new File(basicDataFolder,"check.txt").toString();
 		String result = "";
 		int line_num = 0;
 
@@ -1990,7 +1997,7 @@ public final class Demo extends JavaPlugin {
 
 	//删除行
 	public void delete(String num) throws IOException {
-		String excelFilePath = "C:\\Users\\z\\Desktop\\BOT素材\\可爱词库.xlsx";
+		String excelFilePath = new File(basicDataFolder,"可爱词库.xlsx").toString();
 		int rowNumberToDelete = Integer.parseInt(num);
 
 		try {
@@ -2111,6 +2118,8 @@ public final class Demo extends JavaPlugin {
 		return "false";
 	}
 
+
+
 	private static void saveMusicFile(String playURL) {
 		try {
 			URL fileUrl = new URL(playURL);
@@ -2122,12 +2131,12 @@ public final class Demo extends JavaPlugin {
 			int fileResponseCode = fileConnection.getResponseCode();
 			if (fileResponseCode == HttpURLConnection.HTTP_OK) {
 				try (InputStream fileInputStream = fileConnection.getInputStream();
-				     FileOutputStream fileOutputStream = new FileOutputStream("C:\\Users\\z\\Desktop\\BOT素材\\song.amr")) {
-					byte[] buffer = new byte[BUFFER_SIZE];
-					int bytesRead;
-					while ((bytesRead = fileInputStream.read(buffer)) != -1) {
+					 FileOutputStream fileOutputStream = new FileOutputStream("C:\\Users\\z\\Desktop\\BOT素材\\song.amr")) {
+					 byte[] buffer = new byte[BUFFER_SIZE];
+					 int bytesRead;
+					 while ((bytesRead = fileInputStream.read(buffer)) != -1) {
 						fileOutputStream.write(buffer, 0, bytesRead);
-					}
+					 }
 				}
 			}
 		} catch (IOException e) {
