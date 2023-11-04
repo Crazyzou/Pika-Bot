@@ -60,10 +60,11 @@ public final class Demo extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		getLogger().info("Plugin loaded!");
-
 		GroupChange();
 		GroupCommand();
+		HeziSubscribe();
 	}
+
 
 	Bot bot = BotFactory.INSTANCE.newBot(2750250833L, "");
 	public String role = output("role", "command.txt", 0);//元神接口角色
@@ -74,6 +75,11 @@ public final class Demo extends JavaPlugin {
 	ArrayList<String> stopReply = new ArrayList<>(Arrays.asList(
 			"埋炸弹", "签到", "统计"));
 	private static final ExecutorService executor = Executors.newFixedThreadPool(2);
+
+	// 盒子专用的监听注册
+	public void HeziSubscribe(){
+		GlobalEventChannel.INSTANCE.registerListenerHost(new HeziListener());
+	}
 
 	// 群聊关键词总类
 	public void GroupCommand() {
