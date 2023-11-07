@@ -41,6 +41,7 @@ import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescriptionBuilder;
 import net.mamoe.mirai.event.GlobalEventChannel;
 import net.mamoe.mirai.message.data.*;
 import net.mamoe.mirai.utils.ExternalResource;
+import net.mamoe.mirai.utils.MiraiLogger;
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -53,33 +54,31 @@ import org.springframework.web.client.RestTemplate;
 public final class Demo extends JavaPlugin {
 
 	public Demo() {
-		super(new JvmPluginDescriptionBuilder("com.example.demo", "0.3.0")
-				.name("Demo")
+		super(new JvmPluginDescriptionBuilder("top.crazy_zou.kaqiu_bot", "0.3.1")
+				.name("卡丘机器人")
 				.author("z")
 				.build());
 	}
-
 	public File basicDataFolder = getDataFolder();
 	public File basicConfigFolder = getConfigFolder();
-
+	public MiraiLogger logger = getLogger();
 	@Override
 	public void onEnable() {
-		getLogger().info("Plugin loaded!");
+		logger.info("插件开始加载，注册监听中。。。");
 		GroupChange();
 		GroupCommand();
 		HeziSubscribe();
-
+		logger.info("插件加载完毕");
 	}
-
-
-	Bot bot = BotFactory.INSTANCE.newBot(2750250833L, "");
+	// 这行代码其实没用
+	// Bot bot = BotFactory.INSTANCE.newBot(2750250833L, "");
 	public String role = output("role", "command.txt", 0);//元神接口角色
 	public String spark = output("spark", "command.txt", 0);//星火语音文字
 	static final int CONNECTION_TIMEOUT = 5000;
 	static final int READ_TIMEOUT = 10000;
 	static final int BUFFER_SIZE = 1024;
 	ArrayList<String> stopReply = new ArrayList<>(Arrays.asList(
-			"埋炸弹", "签到", "统计"));
+			"埋地雷", "签到", "统计"));
 	private static final ExecutorService executor = Executors.newFixedThreadPool(2);
 
 	// 盒子专用的监听注册
@@ -170,19 +169,25 @@ public final class Demo extends JavaPlugin {
 						try {
 							String reply = userinfo(String.valueOf(userqq));
 							String[] user = reply.split(":");
+							File imgFile =  new File(basicDataFolder,"img");
 							if (user[0].equals("null")) {
 								String num = random(1, 2, 0);
-								Image image = event.getSubject().uploadImage(ExternalResource.create(encodeImage("C:\\Users\\z\\Desktop\\BOT素材\\img\\已签到" + num + ".png")));
+								ExternalResource res = ExternalResource.create(encodeImage(
+										new File(imgFile,"已签到"+num+".png").toString()));
+								Image image = event.getSubject().uploadImage(res);
 								MessageChainBuilder builder = new MessageChainBuilder();
 								builder.append("今天签过到了喵ᓚᘏᗢ\n");
 								builder.append(image);
 								event.getSubject().sendMessage(builder.build());
+								res.close();
 								countAdd();
 							} else {
 								String[] bag = bag(String.valueOf(userqq)).split(":");
 								if (!bag[0].equals("null")) {
 									String num = random(1, 4, 0);
-									Image image = event.getSubject().uploadImage(ExternalResource.create(encodeImage("C:\\Users\\z\\Desktop\\BOT素材\\img\\签到" + num + ".png")));
+									ExternalResource res = ExternalResource.create(encodeImage(
+											new File(imgFile,"已签到"+num+".png").toString()));
+									Image image = event.getSubject().uploadImage(res);
 									MessageChainBuilder builder = new MessageChainBuilder();
 									builder.add("『皮卡丘专属助手』\n");
 									builder.add("⊱ ———*———⊰\n");
@@ -198,6 +203,7 @@ public final class Demo extends JavaPlugin {
 									builder.add("⊱ ———*———⊰\n");
 									builder.add(image);
 									event.getSubject().sendMessage(builder.build());
+									res.close();
 								}
 								countAdd();
 								break;
@@ -213,8 +219,10 @@ public final class Demo extends JavaPlugin {
 									"= = = = = = = = = = = =\n" +
 									japan_water +
 									"\n= = = = = = = = = = = =", "blue");
-							Image image = event.getSubject().uploadImage(ExternalResource.create(japan));
+							ExternalResource res = ExternalResource.create(japan);
+							Image image = event.getSubject().uploadImage(res);
 							event.getSubject().sendMessage(image);
+							res.close();
 							countAdd();
 						} catch (IOException e) {
 							throw new RuntimeException(e);
@@ -434,21 +442,24 @@ public final class Demo extends JavaPlugin {
 					case "埋地雷":
 						try {
 							String user_mine = output(String.valueOf(userqq), "user-mine.txt", 1);
+							File imgFile = new File(basicDataFolder,"img");
 							if (user_mine.equals("close") | user_mine.equals("0")) {
 								event.getSubject().sendMessage("🍥[" + username + "]你没有地雷了\n🍥[签到]每日可获取\n🍥[背包]可查看数量\n🍥[市场]可购买");
 								break;
 							}
 							if (mine.trim().equals("close")) {
 								String num = random(1, 5, 0);
-								Image image = event.getSubject().uploadImage(ExternalResource.create(encodeImage("C:\\Users\\z\\Desktop\\BOT素材\\img\\地雷" + num + ".png")));
+								ExternalResource res = ExternalResource.create(encodeImage(
+										new File(imgFile,"地雷"+num+".png").toString()));
+								Image image = event.getSubject().uploadImage(res);
 								MessageChainBuilder builder = new MessageChainBuilder();
-
 								builder.append("[" + username + "]已埋好地雷啦，将随机引爆😋\n");
 								builder.append(image);
 								event.getSubject().sendMessage(builder.build());
 
 								input(String.valueOf(groupId), "open", "mine.txt");
 								input(String.valueOf(userqq), String.valueOf(Integer.parseInt(user_mine) - 1), "user-mine.txt");
+								res.close();
 								countAdd();
 							}
 							if (mine.trim().equals("open")) {
@@ -468,10 +479,13 @@ public final class Demo extends JavaPlugin {
 						break;
 					case "背包":
 						try {
+							File imgFile = new File(basicDataFolder,"img");
 							String[] bag = bag(String.valueOf(userqq)).split(":");
 							String num = null;
 							num = random(1, 5, 0);
-							Image image = event.getSubject().uploadImage(ExternalResource.create(encodeImage("C:\\Users\\z\\Desktop\\BOT素材\\img\\地雷" + num + ".png")));
+							ExternalResource res = ExternalResource.create(encodeImage(
+									new File(imgFile,"地雷"+num+".png").toString()));
+							Image image = event.getSubject().uploadImage(res);
 							MessageChainBuilder messageBuilder = new MessageChainBuilder()
 									.append("『皮卡丘专属助手』\n")
 									.append("= = = = = = = =\n")
@@ -489,6 +503,7 @@ public final class Demo extends JavaPlugin {
 									.append("= = = = = = = =\n")
 									.append(image);
 							event.getSubject().sendMessage(messageBuilder.build());
+							res.close();
 							countAdd();
 						} catch (IOException e) {
 							throw new RuntimeException(e);
@@ -558,8 +573,10 @@ public final class Demo extends JavaPlugin {
 										"= = = = = = = = = = = =\n" +
 										word +
 										"\n= = = = = = = = = = = =", "blue");
-								Image image = event.getSubject().uploadImage(ExternalResource.create(check));
+								ExternalResource res = ExternalResource.create(check);
+								Image image = event.getSubject().uploadImage(res);
 								event.getSubject().sendMessage(image);
+								res.close();
 								countAdd();
 							} catch (IOException e) {
 								throw new RuntimeException(e);
@@ -613,8 +630,10 @@ public final class Demo extends JavaPlugin {
 											"= = = = = = = = = = = =\n" +
 											"未能查询到相关信息" +
 											"\n= = = = = = = = = = = =", "blue");
-									Image image = event.getSubject().uploadImage(ExternalResource.create(find));
+									ExternalResource res = ExternalResource.create(find);
+									Image image = event.getSubject().uploadImage(res);
 									event.getSubject().sendMessage(image);
+									res.close();
 									countAdd();
 								} else {
 									String[] result = response.split(" ");
@@ -625,8 +644,10 @@ public final class Demo extends JavaPlugin {
 											"[Phone]:" + phone + "\n" +
 											"[Phone Location]:\n" + diqu +
 											"\n= = = = = = = = = = = =", "blue");
-									Image image = event.getSubject().uploadImage(ExternalResource.create(find));
+									ExternalResource res = ExternalResource.create(find);
+									Image image = event.getSubject().uploadImage(res);
 									event.getSubject().sendMessage(image);
+									res.close();
 									countAdd();
 								}
 							} catch (IOException e) {
@@ -642,8 +663,10 @@ public final class Demo extends JavaPlugin {
 											"= = = = = = = = = = = =\n" +
 											"未能查询到相关信息" +
 											"\n= = = = = = = = = = = =", "blue");
-									Image image = event.getSubject().uploadImage(ExternalResource.create(find));
+									ExternalResource res = ExternalResource.create(find);
+									Image image = event.getSubject().uploadImage(res);
 									event.getSubject().sendMessage(image);
+									res.close();
 									countAdd();
 								} else {
 									String[] result = response.split(" ");
@@ -654,8 +677,10 @@ public final class Demo extends JavaPlugin {
 											"[QQ]:" + find_qq + "\n" +
 											"[Phone Location]:\n" + diqu +
 											"\n= = = = = = = = = = = =", "blue");
-									Image image = event.getSubject().uploadImage(ExternalResource.create(find));
+									ExternalResource res = ExternalResource.create(find);
+									Image image = event.getSubject().uploadImage(res);
 									event.getSubject().sendMessage(image);
+									res.close();
 									countAdd();
 								}
 							} catch (IOException e) {
@@ -722,8 +747,11 @@ public final class Demo extends JavaPlugin {
 							switch (command[1]) {
 								case "role":
 									try {
-										Image image = event.getSubject().uploadImage(ExternalResource.create(encodeImage("C:\\Users\\z\\Desktop\\BOT素材\\voice.png")));
+										File imgFile = new File(basicDataFolder,"voice.png");
+										ExternalResource res = ExternalResource.create(encodeImage(imgFile.getPath()));
+										Image image = event.getSubject().uploadImage(res);
 										event.getSubject().sendMessage(image);
+										res.close();
 									} catch (IOException e) {
 										throw new RuntimeException(e);
 									}
@@ -1050,8 +1078,13 @@ public final class Demo extends JavaPlugin {
 										try {
 											String num = random(3, 6, 0);
 											event.getSender().mute(180 * Integer.parseInt(num));
-											Image image = event.getSubject().uploadImage(ExternalResource.create(encodeImage("C:\\Users\\z\\Desktop\\BOT素材\\img\\work" + num + ".jpg")));
-											Image picture = event.getSubject().uploadImage(ExternalResource.create(wordTopicture(aojiaoreply("题库"), "blue")));
+											File imgFolder = new File(basicDataFolder,"img");
+											String imgPath = new File(imgFolder,"work" + num + ".jpg").toString();
+											ExternalResource res = ExternalResource.create(encodeImage(imgPath));
+											Image image = event.getSubject().uploadImage(res);
+											ExternalResource qRes = ExternalResource.create(
+													wordTopicture(aojiaoreply("题库"), "blue"));
+											Image picture = event.getSubject().uploadImage(qRes);
 											MessageChainBuilder messageBuilder = new MessageChainBuilder()
 													.append("呐呐呐~你的背包到账[")
 													.append(String.valueOf(add))
@@ -1061,6 +1094,8 @@ public final class Demo extends JavaPlugin {
 													.append(picture);
 											event.getSubject().sendMessage(messageBuilder.build());
 											input(String.valueOf(userqq), String.valueOf(add + Integer.parseInt(money)), "user-money.txt");
+											res.close();
+											qRes.close();
 											countAdd();
 										} catch (IOException e) {
 											throw new RuntimeException(e);
@@ -2117,7 +2152,6 @@ public final class Demo extends JavaPlugin {
 		}
 		return "false";
 	}
-
 
 
 	private static void saveMusicFile(String playURL) {
