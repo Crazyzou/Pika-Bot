@@ -75,7 +75,7 @@ public final class MainPlugin extends JavaPlugin {
 	static final int READ_TIMEOUT = 10000;
 	static final int BUFFER_SIZE = 1024;
 	ArrayList<String> stopReply = new ArrayList<>(Arrays.asList(
-			"埋地雷", "签到", "统计"));
+			"埋地雷", "签到", "统计", "背包"));
 	private static final ExecutorService executor = Executors.newFixedThreadPool(2);
 
 	// 盒子专用的监听注册
@@ -183,7 +183,7 @@ public final class MainPlugin extends JavaPlugin {
 								if (!bag[0].equals("null")) {
 									String num = random(1, 4, 0);
 									ExternalResource res = ExternalResource.create(encodeImage(
-											new File(imgFile,"已签到"+num+".png").toString()));
+											new File(imgFile,"签到"+num+".png").toString()));
 									Image image = event.getSubject().uploadImage(res);
 									MessageChainBuilder builder = new MessageChainBuilder();
 									builder.add("『皮卡丘专属助手』\n");
