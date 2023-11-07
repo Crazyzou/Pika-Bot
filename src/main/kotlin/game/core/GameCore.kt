@@ -1,5 +1,7 @@
 package com.example.game.core
 
+import java.io.File
+
 /** 游戏核心主体主要功能：
  * 识别玩家指令合法性
  * 管理并维护游戏列表
@@ -9,6 +11,17 @@ package com.example.game.core
  * 读取自定义地图
  * */
 object GameCore {
+    private var dataFolder:File? = null
+    private var configFolder:File? = null
 
+    /**初始化设置基础数据与配置目录*/
+    public fun initBaseFolder(data:File,config:File){
+        if (dataFolder==null){
+            dataFolder = data
+        }
+        if (configFolder == null){
+            configFolder = config
+        }
+    }
 }
 

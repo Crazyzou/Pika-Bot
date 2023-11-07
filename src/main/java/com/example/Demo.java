@@ -23,6 +23,7 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.imageio.ImageIO;
 import javax.net.ssl.HttpsURLConnection;
 
+import com.example.game.core.GameCore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -81,10 +82,9 @@ public final class Demo extends JavaPlugin {
 			"埋炸弹", "签到", "统计"));
 	private static final ExecutorService executor = Executors.newFixedThreadPool(2);
 
-
-
 	// 盒子专用的监听注册
 	public void HeziSubscribe(){
+		GameCore.INSTANCE.initBaseFolder(basicDataFolder,basicConfigFolder);
 		GlobalEventChannel.INSTANCE.registerListenerHost(new HeziListener());
 	}
 
