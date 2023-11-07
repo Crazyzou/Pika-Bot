@@ -1,4 +1,4 @@
-package com.example
+package top.crazy_zou
 
 import net.mamoe.mirai.event.EventHandler
 import net.mamoe.mirai.event.ListenerHost

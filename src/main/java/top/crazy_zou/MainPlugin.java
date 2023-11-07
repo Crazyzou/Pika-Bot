@@ -1,4 +1,4 @@
-package com.example;
+package top.crazy_zou;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -29,9 +29,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.*;
-import net.mamoe.mirai.Bot;
-import net.mamoe.mirai.BotFactory;
-import net.mamoe.mirai.console.data.PluginConfig;
 import net.mamoe.mirai.contact.*;
 import net.mamoe.mirai.event.events.*;
 import net.mamoe.mirai.internal.deps.okhttp3.*;
@@ -51,9 +48,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-public final class Demo extends JavaPlugin {
+public final class MainPlugin extends JavaPlugin {
 
-	public Demo() {
+	public MainPlugin() {
 		super(new JvmPluginDescriptionBuilder("top.crazy_zou.kaqiu_bot", "0.3.1")
 				.name("卡丘机器人")
 				.author("z")
