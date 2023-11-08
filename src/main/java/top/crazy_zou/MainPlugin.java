@@ -6,6 +6,7 @@ import java.net.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
@@ -139,8 +140,9 @@ public final class MainPlugin extends JavaPlugin {
 					case "菜单":
 						try {
 							String num = random(1, 5, 0);
-							Image image = event.getSubject().uploadImage(ExternalResource.create(encodeImage("C:\\Users\\z\\Desktop\\BOT素材\\img\\菜单" + num + ".png")));
-
+							Path menu = Paths.get(basicDataFolder.toString(),"img","菜单"+num+".png");
+							ExternalResource res = ExternalResource.create(encodeImage(menu.toString()));
+							Image image = event.getSubject().uploadImage(res);
 							MessageChainBuilder builder = new MessageChainBuilder();
 							builder.append("『皮卡丘口令大全』\n");
 							builder.append("= = = = = = = =\n");
@@ -152,6 +154,7 @@ public final class MainPlugin extends JavaPlugin {
 							builder.append(image);
 							event.getSubject().sendMessage(builder.build());
 							countAdd();
+							res.close();
 						} catch (IOException e) {
 							throw new RuntimeException(e);
 						}

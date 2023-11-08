@@ -3,7 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.plugin.serialization' version '1.7.10'
     id 'org.springframework.boot' version '2.6.3'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-    id 'net.mamoe.mirai-console' version '2.15.0'
+    id 'net.mamoe.mirai-console' version '2.16.0'
 }
 
 group = 'top.crazy_zou'
@@ -16,8 +16,8 @@ repositories {
 
 dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
-    implementation group: 'net.mamoe', name: 'mirai-core-all', version: '2.14.0'
-    implementation group: 'net.mamoe', name: 'mirai-console', version: '2.14.0'
+    implementation group: 'net.mamoe', name: 'mirai-core-all', version: '2.16.0'
+//    implementation group: 'net.mamoe', name: 'mirai-console', version: '2.14.0'
     implementation 'com.google.code.gson:gson:2.8.7'
     implementation 'org.apache.poi:poi:5.0.0'
     implementation 'org.apache.poi:poi-ooxml:5.0.0'
